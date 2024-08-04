@@ -36,15 +36,17 @@ public class MemberApiController {
 
     @Data
     @AllArgsConstructor
-    static class Result<T> {
-        private T data;
+    static class MemberDto {
+        private String name;
     }
 
     @Data
     @AllArgsConstructor
-    static class MemberDto {
-        private String name;
+    static class Result<T> {
+        private T data;
     }
+
+
     @PostMapping("/api/v1/members")
     public CreateMemberReponse saveMemberV1(@RequestBody @Valid Member member) {
         Long id = memberService.join(member);
