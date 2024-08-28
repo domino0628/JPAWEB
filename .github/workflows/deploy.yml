@@ -1,8 +1,17 @@
-name: Deploy to EC2
+# GitHub Actions는 코드가 master 브랜치에 푸시될 때마다:
+
+#코드를 체크아웃
+#Java 프로젝트를 빌드
+#Docker 이미지를 빌드,푸시
+#deploy.sh 스크립트를 EC2 인스턴스로 복사
+#EC2 인스턴스에서 deploy.sh 스크립트를 실행하여 새 버전을 배포
+
+
+name: Deploy to Amazon EC2
 
 on:
   push:
-    branches: [ master ]  # 또는 당신의 주 브랜치 이름
+    branches: [ "master" ]
 
 jobs:
   deploy:
@@ -14,12 +23,12 @@ jobs:
         uses: actions/setup-java@v3
         with:
           java-version: '17'
-          distribution: 'adopt'  # AdoptOpenJDK 사용
+          distribution: 'temurin'
 
       - name: Setup Gradle
         uses: gradle/gradle-build-action@v2
 
-      - name: Build with Gradle
+      - name: Execute Gradle build
         run: ./gradlew build
 
       - name: Build and push Docker image
@@ -28,8 +37,8 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker build -t yourusername/yourapp:${{ github.sha }} .
-          docker push yourusername/yourapp:${{ github.sha }}
+          docker build -t $DOCKER_USERNAME/JPAWEB:${{ github.sha }} .
+          docker push $DOCKER_USERNAME/JPAWEB:${{ github.sha }}
 
       - name: Deploy to EC2
         env:
@@ -38,6 +47,8 @@ jobs:
           USER: ${{ secrets.EC2_USER }}
         run: |
           echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          scp -o StrictHostKeyChecking=no -i private_key deploy.sh ${USER}@${HOST}:~/
           ssh -o StrictHostKeyChecking=no -i private_key ${USER}@${HOST} '
-            ./deploy.sh ${{ github.sha }}
+            chmod +x ~/deploy.sh
+            ~/deploy.sh ${{ secrets.DOCKER_USERNAME }} ${{ github.sha }}
           '
