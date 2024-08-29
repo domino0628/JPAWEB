@@ -31,8 +31,8 @@ jobs:
           DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
         run: |
           docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-          docker build -t $DOCKER_USERNAME/JPAWEB:${{ github.sha }} .
-          docker push $DOCKER_USERNAME/JPAWEB:${{ github.sha }}
+          docker build -t $DOCKER_USERNAME/jpaweb:${{ github.sha }} .
+          docker push $DOCKER_USERNAME/jpaweb:${{ github.sha }}
 
       - name: Deploy to EC2
         env:

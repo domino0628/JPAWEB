@@ -4,8 +4,8 @@ DOCKER_USERNAME=$1
 IMAGE_TAG=$2
 
 # 새 컨테이너 시작
-docker pull $DOCKER_USERNAME/JPAWEB:$IMAGE_TAG
-docker run -d --name app-blue -p 8081:8080 $DOCKER_USERNAME/JPAWEB:$IMAGE_TAG
+docker pull $DOCKER_USERNAME/jpaweb:$IMAGE_TAG
+docker run -d --name app-blue -p 8081:8080 $DOCKER_USERNAME/jpaweb:$IMAGE_TAG
 
 # 헬스 체크
 for i in {1..10}
