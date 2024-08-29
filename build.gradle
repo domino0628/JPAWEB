@@ -54,5 +54,5 @@ tasks.named('test') {
 test {
 	useJUnitPlatform()
 	// 모든 테스트를 건너뛰도록 설정
-	exclude = ['*']
+	excludes = ['*']
 }
